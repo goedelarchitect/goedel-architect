@@ -152,7 +152,7 @@ python -m goedel_architect.verify runs/demo --statements examples/problems.jsonl
 
 ```bibtex
 @article{chung2026goedelarchitect,
-  title   = {Goedel-Architect: Blueprint Generation and Refinement for Formal Theorem Proving},
+  title   = {Goedel-Architect: Streamlining Formal Theorem Proving with Blueprint Generation and Refinement},
   author  = {Chung, Jui-Hui and Cai, Ziyang and Li, Zihao and Yin, Qishuo and Agarwal, Rohit and Park, Simon and Porto, Rodrigo and Ri, Narutatsu and Yang, Ziran and Tang, Shange and Dang, Xingyu and Lin, Hongzhou and Wang, Mengdi and Chen, Danqi and Jin, Chi and Fowl, Liam H and Arora, Sanjeev},
   journal = {arXiv preprint arXiv:2606.06468},
   year    = {2026}
