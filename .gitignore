@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+.venv/
+venv/
+.env
+runs/
+lean/.lake/

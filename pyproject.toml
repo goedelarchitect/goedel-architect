@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "goedel-architect"
+version = "1.0.0"
+description = "Blueprint generation and refinement for formal theorem proving in Lean 4"
+readme = "README.md"
+license = {text = "Apache-2.0"}
+requires-python = ">=3.10"
+dependencies = [
+    "openai>=1.40",
+    "httpx>=0.27",
+    "transformers>=4.40",  # tokenizer for prompt-token counting (no PyTorch needed)
+]
+
+[project.urls]
+Paper = "https://arxiv.org/abs/2606.06468"
+Homepage = "https://goedelarchitect.github.io"
+
+[project.scripts]
+goedel-architect = "goedel_architect.pipeline:main"
+
+[tool.setuptools]
+packages = ["goedel_architect", "goedel_architect.prompts"]
+
+[tool.setuptools.package-data]
+"goedel_architect.prompts" = ["*.md"]

@@ -1,0 +1,18 @@
+# Lean environment for the Goedel-Architect Lean server: Mathlib + LeanArchitect.
+# To use another Lean version, change `lean-toolchain` and both `rev`s to the same
+# release tag (LeanArchitect publishes a tag for each Lean release).
+name = "goedel_architect_env"
+defaultTargets = ["GoedelArchitectEnv"]
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4.git"
+rev = "v4.27.0"
+
+[[require]]
+name = "LeanArchitect"
+git = "https://github.com/hanwenzhu/LeanArchitect.git"
+rev = "v4.27.0"
+
+[[lean_lib]]
+name = "GoedelArchitectEnv"
