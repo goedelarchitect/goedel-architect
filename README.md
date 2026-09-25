@@ -97,7 +97,10 @@ also work (`--model-url`, `--api-key-env`).
 
 Mathlib search uses the public [LeanSearch](https://leansearch.net) API. If it
 is unreachable, the pipeline turns search off and runs without it. You can
-also turn it off yourself with `--search-server none`.
+also turn it off yourself with `--search-server none`, or pass the URL of your
+own search service. The pipeline sends it `POST {"query": "...", "top_k": 5}`
+and expects `{"records": [...]}` back. Each record needs `name_pp` and
+`signature`; `kind`, `module_name_pp` and `informal_description` are optional.
 
 ## Run
 
@@ -120,8 +123,8 @@ Useful options (see `--help` for all):
 | `--node-retries` | 4 | attempts per lemma |
 | `--nl-proof` | off | first write natural-language proofs and use them to guide the blueprint (`--nl-model` to use a different model) |
 | `--nl-proof-from-input` | off | use an `nl_proof` field already in the problems file |
-| `--search-server` | leansearch.net | `none` disables Mathlib search |
-| `--resume` | | continue an interrupted run in `--run-dir` |
+| `--search-server` | leansearch.net | `none` disables Mathlib search; a URL uses your own service |
+| `--resume` | | continue a run in `--run-dir` with its saved settings (`run_config.json`) |
 
 Outputs go to `--run-dir`:
 

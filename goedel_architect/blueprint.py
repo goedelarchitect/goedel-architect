@@ -87,9 +87,10 @@ log = logging.getLogger("goedel_architect.blueprint")
 # ---------------------------------------------------------------------------
 #  Tool definitions
 #
-#  The `lean_compile` description below is kept verbatim from the runs
-#  reported in the paper. It still mentions the "input DAG" of an earlier
-#  pipeline variant; the model sees it in both modes of this stage.
+#  The paper runs used an older `lean_compile` description written for an
+#  earlier pipeline variant that started from an input DAG. It told the model
+#  not to write `statement` / `proof` fields, contradicting the system prompt.
+#  The description below matches the checks this stage actually runs.
 # ---------------------------------------------------------------------------
 
 LEAN_COMPILE_TOOL = {
@@ -97,7 +98,7 @@ LEAN_COMPILE_TOOL = {
     "function": {
         "name": "lean_compile",
         "description": (
-            "Compile a Lean 4 code snippet against Mathlib + LeanArchitect and return compilation feedback. The code must be a complete, self-contained Lean 4 file including all imports (e.g. `import Mathlib` and `import Architect`). Returns whether compilation succeeded and any error messages with their positions; on a clean compile, also runs an alignment check against the input DAG and reports any mismatches (missing node, kind mismatch, or `sorry_using` deps that differ from the DAG's `deps`). For the SKELETON stage, sorries from `sorry_using` are EXPECTED and do not count as failure — only real compile errors and DAG-alignment mismatches do."
+            "Compile a Lean 4 code snippet against Mathlib + LeanArchitect and return compilation feedback. The code must be a complete, self-contained Lean 4 file including all imports (e.g. `import Mathlib` and `import Architect`). Returns whether compilation succeeded and any error messages with their positions; on a clean compile, also runs a graph-validity check on the `@[blueprint]` declarations and reports any issues (a missing `statement` or `proof` field, a `sorry_using` dependency that is not a declared node, a cycle, or a node that the main theorem does not depend on). For the SKELETON stage, sorries from `sorry_using` are EXPECTED and do not count as failure — only real compile errors and graph-validity issues do."
         ),
         "parameters": {
             "type": "object",
@@ -105,7 +106,7 @@ LEAN_COMPILE_TOOL = {
                 "code": {
                     "type": "string",
                     "description": (
-                        "Complete Lean 4 LeanArchitect blueprint code. Must include `import Mathlib` and `import Architect`. Each node from the input DAG must appear as a bare `@[blueprint]`-annotated declaration with the same `name` as the DAG node (used as the Lean identifier); every theorem/lemma must end in `:= by sorry_using [d1, d2, ...]` listing the DAG node's `deps`. Do NOT add `(statement := ...)` or `(proof := ...)` fields to the `@[blueprint]` annotations — those are post-processed in from the DAG. The main theorem must use the exact original Lean signature provided in the user prompt."
+                        "Complete Lean 4 LeanArchitect blueprint code. Must include `import Mathlib` and `import Architect`. Every theorem/lemma must be preceded by `@[blueprint (statement := /-- ... -/) (proof := /-- ... -/)]` and end in `:= by sorry_using [d1, d2, ...]` listing its direct parents. Definitions need only `(statement := /-- ... -/)` and carry a real Lean body. The main theorem must use the exact original Lean signature provided in the user prompt."
                     ),
                 }
             },

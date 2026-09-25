@@ -163,7 +163,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 #  Run configuration (frozen on the first run, replayed on --resume)
 # ---------------------------------------------------------------------------
 
-def resolve_config(args: argparse.Namespace) -> argparse.Namespace:
+def resolve_config(args: argparse.Namespace, argv: list[str]) -> argparse.Namespace:
     if args.run_dir is None:
         if args.resume:
             sys.exit("--resume needs --run-dir")
@@ -174,10 +174,16 @@ def resolve_config(args: argparse.Namespace) -> argparse.Namespace:
     config_path = run_dir / "run_config.json"
     if args.resume and config_path.exists():
         frozen = json.loads(config_path.read_text())
-        for k, v in frozen.items():
-            if k not in _NOT_FROZEN:
-                setattr(args, k, v)
         print(f"[resume] replaying options from {config_path}")
+        given = {a.split("=", 1)[0] for a in argv if a.startswith("--")}
+        for k, v in frozen.items():
+            if k in _NOT_FROZEN:
+                continue
+            flag = "--" + k.replace("_", "-")
+            if flag in given and getattr(args, k, v) != v:
+                print(f"[resume] ignoring {flag} {getattr(args, k)!r}: this run was "
+                      f"started with {v!r} (edit {config_path} to change it)")
+            setattr(args, k, v)
     run_dir.mkdir(parents=True, exist_ok=True)
     if not config_path.exists():
         config = {k: v for k, v in vars(args).items() if k not in _NOT_FROZEN}
@@ -493,7 +499,8 @@ def rollup(run_dir: Path, n_iters: int) -> dict:
 
 
 def main(argv: list[str] | None = None) -> None:
-    args = resolve_config(parse_args(argv))
+    argv = sys.argv[1:] if argv is None else argv
+    args = resolve_config(parse_args(argv), argv)
     run_dir = Path(args.run_dir)
     print(f"[pipeline] run dir: {run_dir}")
     print(f"[pipeline] model:   {args.model} via {args.model_url}"
